@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 
 export default function EduPulseUniversity() {
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -22,6 +25,30 @@ export default function EduPulseUniversity() {
     console.log('Form submitted:', formData);
   };
 
+  const navigationMenus = [
+    {
+      label: 'Why EduPulse',
+      links: [
+        { label: 'Student outcomes', href: '#why' },
+        { label: 'University partners', href: '#partners' },
+      ],
+    },
+    {
+      label: 'Solutions',
+      links: [
+        { label: 'Career Academy', href: '#career-academy' },
+        { label: 'Learning platform', href: '#solutions' },
+      ],
+    },
+    {
+      label: 'Resources',
+      links: [
+        { label: 'University stories', href: '#resources' },
+        { label: 'Contact sales', href: '#contact' },
+      ],
+    },
+  ];
+
   return (
     /* Outer layout wrapper ensuring persistent footer behavior */
     <div className="font-sans text-gray-900 bg-white min-h-screen flex flex-col">
@@ -35,27 +62,99 @@ export default function EduPulseUniversity() {
 
         {/* Navigation Header */}
         <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div className="flex items-center gap-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex min-h-20 flex-wrap items-center justify-between">
+            <div className="flex min-h-20 items-center gap-8">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-extrabold tracking-tight text-indigo-700">EduPulse</span>
                 <span className="text-gray-600 font-medium text-base">for university</span>
               </div>
               
-              <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-700">
-                <a href="#why" className="hover:text-indigo-700 transition-colors">Why EduPulse ▾</a>
-                <a href="#solutions" className="hover:text-indigo-700 transition-colors">Solutions ▾</a>
-                <a href="#resources" className="hover:text-indigo-700 transition-colors">Resources ▾</a>
-                <a href="#plans" className="hover:text-indigo-700 transition-colors">Compare Plans</a>
+              <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-gray-700" aria-label="University navigation">
+                {navigationMenus.map((menu) => (
+                  <div className="relative" key={menu.label}>
+                    <button
+                      type="button"
+                      aria-expanded={activeMenu === menu.label}
+                      onClick={() => setActiveMenu(activeMenu === menu.label ? null : menu.label)}
+                      className="flex items-center gap-1 py-3 hover:text-indigo-700 transition-colors"
+                    >
+                      {menu.label}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === menu.label ? 'rotate-180' : ''}`} />
+                    </button>
+                    {activeMenu === menu.label && (
+                      <div className="absolute left-0 top-full z-30 min-w-52 rounded-lg border border-gray-200 bg-white p-2 shadow-xl">
+                        {menu.links.map((link) => (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => setActiveMenu(null)}
+                            className="block rounded-md px-3 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <a href="#contact" className="py-3 hover:text-indigo-700 transition-colors">Compare Plans</a>
               </nav>
             </div>
 
-            <a
-              href="#contact"
-              className="bg-indigo-700 hover:bg-indigo-800 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-sm"
-            >
-              Contact Us
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href="#contact"
+                className="hidden sm:inline-flex bg-indigo-700 hover:bg-indigo-800 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+              >
+                Contact Us
+              </a>
+              <button
+                type="button"
+                aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                aria-expanded={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-800 hover:bg-gray-100 lg:hidden"
+              >
+                {mobileMenuOpen ? <X size={21} /> : <Menu size={21} />}
+              </button>
+            </div>
+
+            {mobileMenuOpen && (
+              <nav className="w-full border-t border-gray-200 pb-4 pt-2 lg:hidden" aria-label="Mobile university navigation">
+                {navigationMenus.map((menu) => (
+                  <div className="border-b border-gray-100" key={menu.label}>
+                    <button
+                      type="button"
+                      aria-expanded={activeMenu === menu.label}
+                      onClick={() => setActiveMenu(activeMenu === menu.label ? null : menu.label)}
+                      className="flex w-full items-center justify-between py-3 text-left text-sm font-semibold text-gray-800"
+                    >
+                      {menu.label}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === menu.label ? 'rotate-180' : ''}`} />
+                    </button>
+                    {activeMenu === menu.label && (
+                      <div className="pb-2 pl-3">
+                        {menu.links.map((link) => (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => {
+                              setActiveMenu(null);
+                              setMobileMenuOpen(false);
+                            }}
+                            className="block py-2 text-sm text-gray-600 hover:text-indigo-700"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-3 text-sm font-semibold text-gray-800">Compare Plans</a>
+                <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="mt-1 block rounded-md bg-indigo-700 px-4 py-3 text-center text-sm font-semibold text-white">Contact Us</a>
+              </nav>
+            )}
           </div>
         </header>
 
@@ -93,7 +192,7 @@ export default function EduPulseUniversity() {
         </section>
 
         {/* Impact Metrics Banner */}
-        <section className="bg-[#0f172a] text-white py-12">
+        <section id="why" className="bg-[#0f172a] text-white py-12 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="border-l-4 border-indigo-500 pl-6">
@@ -119,7 +218,7 @@ export default function EduPulseUniversity() {
         </section>
 
         {/* Partner Logos Section */}
-        <section className="py-16 bg-gray-50 border-b border-gray-200">
+        <section id="partners" className="py-16 bg-gray-50 border-b border-gray-200 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 max-w-3xl mx-auto mb-12">
               Offer students 10,600+ courses from 350+ leading universities and industry partners
@@ -136,7 +235,7 @@ export default function EduPulseUniversity() {
         </section>
 
         {/* Career Academy Section */}
-        <section className="py-16 bg-white">
+        <section id="career-academy" className="py-16 bg-white scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="rounded-xl overflow-hidden shadow-md">
@@ -171,7 +270,7 @@ export default function EduPulseUniversity() {
         </section>
 
         {/* Indigo Feature Banner */}
-        <section className="bg-indigo-700 text-white py-16">
+        <section id="solutions" className="bg-indigo-700 text-white py-16 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl sm:text-4xl font-bold mb-12 max-w-2xl leading-tight">
               Expand your curriculum with a university learning platform that empowers faculty
@@ -207,7 +306,7 @@ export default function EduPulseUniversity() {
         </section>
 
         {/* Testimonial Section */}
-        <section className="py-20 bg-gray-50">
+        <section id="resources" className="py-20 bg-gray-50 scroll-mt-24">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h3 className="text-2xl font-bold text-gray-900 mb-8">
               Here's how innovative universities are using EduPulse for University

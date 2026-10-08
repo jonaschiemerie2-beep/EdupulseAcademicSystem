@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 
 export default function EduPulseGovernment() {
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -22,6 +25,30 @@ export default function EduPulseGovernment() {
     console.log('Form submitted:', formData);
   };
 
+  const navigationMenus = [
+    {
+      label: 'Why EduPulse',
+      links: [
+        { label: 'Workforce impact', href: '#why' },
+        { label: 'Trusted learning content', href: '#content' },
+      ],
+    },
+    {
+      label: 'Solutions',
+      links: [
+        { label: 'Government training', href: '#solutions' },
+        { label: 'Skills Tracks', href: '#teams' },
+      ],
+    },
+    {
+      label: 'Resources',
+      links: [
+        { label: 'Global Skills Report', href: '#report' },
+        { label: 'Contact sales', href: '#contact' },
+      ],
+    },
+  ];
+
   return (
     <div className="font-sans text-gray-900 bg-white min-h-screen flex flex-col">
       <div className="flex-grow">
@@ -36,27 +63,99 @@ export default function EduPulseGovernment() {
 
         {/* Navigation Header */}
         <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div className="flex items-center gap-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex min-h-20 flex-wrap items-center justify-between">
+            <div className="flex min-h-20 items-center gap-8">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-extrabold tracking-tight text-blue-700">EduPulse</span>
                 <span className="text-gray-600 font-medium text-base">for government</span>
               </div>
               
-              <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-700">
-                <a href="#why" className="hover:text-blue-700 transition-colors">Why EduPulse ▾</a>
-                <a href="#solutions" className="hover:text-blue-700 transition-colors">Solutions ▾</a>
-                <a href="#resources" className="hover:text-blue-700 transition-colors">Resources ▾</a>
-                <a href="#teams" className="hover:text-blue-700 transition-colors">For Teams</a>
+              <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-gray-700" aria-label="Government navigation">
+                {navigationMenus.map((menu) => (
+                  <div className="relative" key={menu.label}>
+                    <button
+                      type="button"
+                      aria-expanded={activeMenu === menu.label}
+                      onClick={() => setActiveMenu(activeMenu === menu.label ? null : menu.label)}
+                      className="flex items-center gap-1 py-3 hover:text-blue-700 transition-colors"
+                    >
+                      {menu.label}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === menu.label ? 'rotate-180' : ''}`} />
+                    </button>
+                    {activeMenu === menu.label && (
+                      <div className="absolute left-0 top-full z-30 min-w-52 rounded-lg border border-gray-200 bg-white p-2 shadow-xl">
+                        {menu.links.map((link) => (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => setActiveMenu(null)}
+                            className="block rounded-md px-3 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <a href="#teams" className="py-3 hover:text-blue-700 transition-colors">For Teams</a>
               </nav>
             </div>
 
-            <a
-              href="#contact"
-              className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2.5 rounded font-semibold text-sm transition-colors shadow-sm"
-            >
-              Contact Sales
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href="#contact"
+                className="hidden sm:inline-flex bg-blue-700 hover:bg-blue-800 text-white px-5 py-2.5 rounded font-semibold text-sm transition-colors shadow-sm"
+              >
+                Contact Sales
+              </a>
+              <button
+                type="button"
+                aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                aria-expanded={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-800 hover:bg-gray-100 lg:hidden"
+              >
+                {mobileMenuOpen ? <X size={21} /> : <Menu size={21} />}
+              </button>
+            </div>
+
+            {mobileMenuOpen && (
+              <nav className="w-full border-t border-gray-200 pb-4 pt-2 lg:hidden" aria-label="Mobile government navigation">
+                {navigationMenus.map((menu) => (
+                  <div className="border-b border-gray-100" key={menu.label}>
+                    <button
+                      type="button"
+                      aria-expanded={activeMenu === menu.label}
+                      onClick={() => setActiveMenu(activeMenu === menu.label ? null : menu.label)}
+                      className="flex w-full items-center justify-between py-3 text-left text-sm font-semibold text-gray-800"
+                    >
+                      {menu.label}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === menu.label ? 'rotate-180' : ''}`} />
+                    </button>
+                    {activeMenu === menu.label && (
+                      <div className="pb-2 pl-3">
+                        {menu.links.map((link) => (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => {
+                              setActiveMenu(null);
+                              setMobileMenuOpen(false);
+                            }}
+                            className="block py-2 text-sm text-gray-600 hover:text-blue-700"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <a href="#teams" onClick={() => setMobileMenuOpen(false)} className="block py-3 text-sm font-semibold text-gray-800">For Teams</a>
+                <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="mt-1 block rounded-md bg-blue-700 px-4 py-3 text-center text-sm font-semibold text-white">Contact Sales</a>
+              </nav>
+            )}
           </div>
         </header>
 
@@ -89,7 +188,7 @@ export default function EduPulseGovernment() {
         </section>
 
         {/* Dark Stats Grid Banner */}
-        <section className="bg-[#0b192c] text-white py-12">
+        <section id="why" className="bg-[#0b192c] text-white py-12 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="border-l-4 border-blue-500 pl-6">
@@ -115,7 +214,7 @@ export default function EduPulseGovernment() {
         </section>
 
         {/* High Quality Content / Brand Image Matrix */}
-        <section className="py-16 bg-gray-50 border-b border-gray-200">
+        <section id="content" className="py-16 bg-gray-50 border-b border-gray-200 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-5">
@@ -167,7 +266,7 @@ export default function EduPulseGovernment() {
         </section>
 
         {/* Blue Impact Banner */}
-        <section className="bg-blue-700 text-white py-16">
+        <section id="solutions" className="bg-blue-700 text-white py-16 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
               Government training built for impact
@@ -206,7 +305,7 @@ export default function EduPulseGovernment() {
         </section>
 
         {/* Skills Tracks Section with SVG Curved Graphic Illustrations */}
-        <section className="py-16 bg-white">
+        <section id="teams" className="py-16 bg-white scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <span className="text-xs font-bold uppercase tracking-wider text-blue-700 block mb-2">Explore Skills Tracks</span>
